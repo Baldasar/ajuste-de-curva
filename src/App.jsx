@@ -12,9 +12,7 @@ import {
 import regression from "regression";
 
 export default function App() {
-  const [coordsOne, setCoordsOne] = useState({ x: 0, y: 0 });
-  const [coordsTwo, setCoordsTwo] = useState({ x: 0, y: 0 });
-  const [coordsThree, setCoordsThree] = useState({ x: 0, y: 0 });
+  const [coords, setCoords] = useState([{ x: 0, y: 0 }]);
   const [labelType, setLabelType] = useState("Nenhum gráfico formado");
   const [law, setLaw] = useState("");
   const [data, setData] = useState([]);
@@ -46,24 +44,28 @@ export default function App() {
   }
 
   function handleVerify() {
-    const points = [
-      [coordsOne.x, coordsOne.y],
-      [coordsTwo.x, coordsTwo.y],
-      [coordsThree.x, coordsThree.y],
-    ];
-
+    const points = coords.map(coord => [coord.x, coord.y]);
     const model = bestFitModel(points);
     setLabelType(model);
     setData(points.map((point) => ({ x: point[0], y: point[1] })));
   }
 
   const limpar = () => {
-    setCoordsOne({ x: 0, y: 0 });
-    setCoordsTwo({ x: 0, y: 0 });
-    setCoordsThree({ x: 0, y: 0 });
+    setCoords([{ x: 0, y: 0 }]);
     setLabelType("Nenhum gráfico formado");
     setLaw("");
     setData([]);
+  };
+
+  const addRow = () => {
+    setCoords([...coords, { x: 0, y: 0 }]);
+  };
+
+  const handleCoordChange = (index, axis, value) => {
+    const updatedCoords = coords.map((coord, i) =>
+      i === index ? { ...coord, [axis]: Number(value) } : coord
+    );
+    setCoords(updatedCoords);
   };
 
   return (
@@ -77,19 +79,13 @@ export default function App() {
             </tr>
           </thead>
           <tbody>
-            {[coordsOne, coordsTwo, coordsThree].map((coord, index) => (
+            {coords.map((coord, index) => (
               <tr key={index}>
                 <td className="border border-gray-300 px-4 py-2">
                   <input
                     type="number"
                     value={coord.x}
-                    onChange={(e) =>
-                      index === 0
-                        ? setCoordsOne({ ...coordsOne, x: Number(e.target.value) })
-                        : index === 1
-                        ? setCoordsTwo({ ...coordsTwo, x: Number(e.target.value) })
-                        : setCoordsThree({ ...coordsThree, x: Number(e.target.value) })
-                    }
+                    onChange={(e) => handleCoordChange(index, "x", e.target.value)}
                     className="w-full p-2 bg-gray-50 text-gray-900 rounded border border-gray-300"
                   />
                 </td>
@@ -97,13 +93,7 @@ export default function App() {
                   <input
                     type="number"
                     value={coord.y}
-                    onChange={(e) =>
-                      index === 0
-                        ? setCoordsOne({ ...coordsOne, y: Number(e.target.value) })
-                        : index === 1
-                        ? setCoordsTwo({ ...coordsTwo, y: Number(e.target.value) })
-                        : setCoordsThree({ ...coordsThree, y: Number(e.target.value) })
-                    }
+                    onChange={(e) => handleCoordChange(index, "y", e.target.value)}
                     className="w-full p-2 bg-gray-50 text-gray-900 rounded border border-gray-300"
                   />
                 </td>
@@ -113,14 +103,20 @@ export default function App() {
         </table>
         <div className="flex gap-4 mt-4">
           <button
+            onClick={addRow}
+            className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded text-white shadow-md"
+          >
+            Adicionar Linha
+          </button>
+          <button
             onClick={handleVerify}
-            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white shadow-md"
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white shadow-md"
           >
             Verificar
           </button>
           <button
             onClick={limpar}
-            className="px-6 py-2 bg-gray-500 hover:bg-gray-600 rounded text-white shadow-md"
+            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 rounded text-white shadow-md"
           >
             Limpar
           </button>
