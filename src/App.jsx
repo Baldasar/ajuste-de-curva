@@ -83,6 +83,15 @@ export default function App() {
     setCoords(updatedCoords);
   };
 
+  const minValue = Math.min(
+    Math.min(...coords.map((coord) => coord.x)),
+    Math.min(...coords.map((coord) => coord.y))
+  );
+  const maxValue = Math.max(
+    Math.max(...coords.map((coord) => coord.x)),
+    Math.max(...coords.map((coord) => coord.y))
+  );
+
   return (
     <div className="w-full h-screen p-6 bg-gray-100 text-gray-900 flex">
       <div className="w-2/5 flex flex-col items-center justify-center">
@@ -210,11 +219,17 @@ export default function App() {
               scales: {
                 x: {
                   type: "linear",
+                  min: minValue,
+                  max: maxValue,
                   grid: {
                     display: true,
                     color: "rgba(200, 200, 200, 0.2)",
                   },
                   ticks: {
+                    stepSize: 1,
+                    callback: function (value) {
+                      return value;
+                    },
                     color: "#666",
                     font: {
                       size: 12,
@@ -232,17 +247,20 @@ export default function App() {
                 },
                 y: {
                   type: "linear",
+                  min: minValue,
+                  max: maxValue,
                   grid: {
                     display: true,
                     color: "rgba(200, 200, 200, 0.2)",
                   },
                   ticks: {
+                    stepSize: 1,
+                    callback: function (value) {
+                      return value;
+                    },
                     color: "#666",
                     font: {
                       size: 12,
-                    },
-                    callback: function (value) {
-                      return value.toLocaleString();
                     },
                   },
                   title: {
