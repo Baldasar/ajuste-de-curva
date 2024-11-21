@@ -151,7 +151,14 @@ export default function App() {
         <h3 className="text-lg mb-4 text-center">{law}</h3>
 
         {data.length > 1 && (
-          <div style={{ width: "80%", height: "400px" }}>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "800px",
+              height: "800px",
+              margin: "0 auto",
+            }}
+          >
             <Line
               data={{
                 datasets: [
@@ -170,95 +177,99 @@ export default function App() {
               }}
               options={{
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
+                aspectRatio: 1, // Define uma proporção de 1:1 (ajuste proporcional)
                 plugins: {
                   legend: {
                     display: true,
-                    position: 'top',
+                    position: "top",
                     labels: {
-                      color: '#333',
+                      color: "#333",
                       font: {
                         size: 14,
-                        family: 'Arial, sans-serif'
+                        family: "Arial, sans-serif",
                       },
-                      padding: 20
-                    }
+                      padding: 20,
+                    },
                   },
                   tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
+                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    titleColor: "#fff",
+                    bodyColor: "#fff",
                     padding: 10,
                     cornerRadius: 4,
-                    displayColors: false
+                    displayColors: false,
                   },
                   title: {
                     display: true,
-                    text: 'Título do Gráfico',
-                    color: '#333',
+                    text: "Título do Gráfico",
+                    color: "#333",
                     font: {
                       size: 18,
-                      weight: 'bold',
-                      family: 'Arial, sans-serif'
+                      weight: "bold",
+                      family: "Arial, sans-serif",
                     },
-                    padding: 20
-                  }
+                    padding: 20,
+                  },
                 },
                 scales: {
                   x: {
+                    type: "linear",
                     grid: {
-                      display: false
+                      display: true,
+                      color: "rgba(200, 200, 200, 0.2)",
                     },
                     ticks: {
-                      color: '#666',
+                      color: "#666",
                       font: {
-                        size: 12
-                      }
-                    }
+                        size: 12,
+                      },
+                    },
+                    title: {
+                      display: true,
+                      text: "Eixo X",
+                      color: "#333",
+                      font: {
+                        size: 14,
+                        family: "Arial, sans-serif",
+                      },
+                    },
                   },
                   y: {
-                    beginAtZero: true,
+                    type: "linear",
                     grid: {
-                      color: 'rgba(200, 200, 200, 0.2)'
+                      display: true,
+                      color: "rgba(200, 200, 200, 0.2)",
                     },
                     ticks: {
-                      color: '#666',
+                      color: "#666",
                       font: {
-                        size: 12
+                        size: 12,
                       },
                       callback: function (value) {
                         return value.toLocaleString();
-                      }
-                    }
-                  }
+                      },
+                    },
+                    title: {
+                      display: true,
+                      text: "Eixo Y",
+                      color: "#333",
+                      font: {
+                        size: 14,
+                        family: "Arial, sans-serif",
+                      },
+                    },
+                  },
                 },
                 layout: {
                   padding: {
                     left: 20,
                     right: 20,
                     top: 20,
-                    bottom: 20
-                  }
-                }
+                    bottom: 20,
+                  },
+                },
               }}
-              // options={{
-                
-              //   maintainAspectRatio: false,
-              //   aspectRatio: 1, // Garante que os eixos tenham a mesma proporção
-              //   scales: {
-              //     x: {
-              //       type: "linear",
-              //       title: { display: true, text: "X" },
-              //       min: minValue,
-              //       max: maxValue,
-              //     },
-              //     y: {
-              //       title: { display: true, text: "Y" },
-              //       min: minValue,
-              //       max: maxValue,
-              //     },
-              //   },
-              // }}
             />
           </div>
         )}
