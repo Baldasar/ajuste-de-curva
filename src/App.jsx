@@ -66,11 +66,10 @@ export default function App() {
     setData(modelData);
   }
 
-  const limpar = () => {
-    setCoords([{ x: 0, y: 0 }]);
-    setLabelType("Nenhum gráfico formado");
-    setLaw("");
-    setData([]);
+  const removerUltimaLinha = () => {
+    if (coords.length > 1) {
+      setCoords(coords.slice(0, -1));
+    }
   };
 
   const addRow = () => {
@@ -83,9 +82,6 @@ export default function App() {
     );
     setCoords(updatedCoords);
   };
-
-  const minValue = Math.min(...data.map((point) => Math.min(point.x, point.y)));
-  const maxValue = Math.max(...data.map((point) => Math.max(point.x, point.y)));
 
   return (
     <div className="w-full h-screen p-6 bg-gray-100 text-gray-900 flex">
@@ -138,10 +134,10 @@ export default function App() {
             Verificar
           </button>
           <button
-            onClick={limpar}
-            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 rounded text-white shadow-md"
+            onClick={removerUltimaLinha}
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded text-white shadow-md"
           >
-            Limpar
+            Remover Última Linha
           </button>
         </div>
       </div>
@@ -150,129 +146,127 @@ export default function App() {
         <h3 className="text-lg font-semibold mb-2 text-center">{labelType}</h3>
         <h3 className="text-lg mb-4 text-center">{law}</h3>
 
-        {data.length > 1 && (
-          <div
-            style={{
-              width: "100%",
-              maxWidth: "800px",
-              height: "800px",
-              margin: "0 auto",
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "750px",
+            height: "750px",
+            margin: "0 auto",
+          }}
+        >
+          <Line
+            data={{
+              datasets: [
+                {
+                  label: `${labelType} Model`,
+                  data: data,
+                  borderColor: "rgba(75,192,192,1)",
+                  backgroundColor: "rgba(75,192,192,0.2)",
+                  tension: 0.2,
+                  parsing: {
+                    xAxisKey: "x",
+                    yAxisKey: "y",
+                  },
+                },
+              ],
             }}
-          >
-            <Line
-              data={{
-                datasets: [
-                  {
-                    label: `${labelType} Model`,
-                    data: data,
-                    borderColor: "rgba(75,192,192,1)",
-                    backgroundColor: "rgba(75,192,192,0.2)",
-                    tension: 0.2,
-                    parsing: {
-                      xAxisKey: "x",
-                      yAxisKey: "y",
-                    },
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: true,
-                aspectRatio: 1, // Define uma proporção de 1:1 (ajuste proporcional)
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "top",
-                    labels: {
-                      color: "#333",
-                      font: {
-                        size: 14,
-                        family: "Arial, sans-serif",
-                      },
-                      padding: 20,
-                    },
-                  },
-                  tooltip: {
-                    backgroundColor: "rgba(0, 0, 0, 0.7)",
-                    titleColor: "#fff",
-                    bodyColor: "#fff",
-                    padding: 10,
-                    cornerRadius: 4,
-                    displayColors: false,
-                  },
-                  title: {
-                    display: true,
-                    text: "Título do Gráfico",
+            options={{
+              responsive: true,
+              maintainAspectRatio: true,
+              aspectRatio: 1,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: "top",
+                  labels: {
                     color: "#333",
                     font: {
-                      size: 18,
-                      weight: "bold",
+                      size: 14,
                       family: "Arial, sans-serif",
                     },
                     padding: 20,
                   },
                 },
-                scales: {
-                  x: {
-                    type: "linear",
-                    grid: {
-                      display: true,
-                      color: "rgba(200, 200, 200, 0.2)",
-                    },
-                    ticks: {
-                      color: "#666",
-                      font: {
-                        size: 12,
-                      },
-                    },
-                    title: {
-                      display: true,
-                      text: "Eixo X",
-                      color: "#333",
-                      font: {
-                        size: 14,
-                        family: "Arial, sans-serif",
-                      },
+                tooltip: {
+                  backgroundColor: "rgba(0, 0, 0, 0.7)",
+                  titleColor: "#fff",
+                  bodyColor: "#fff",
+                  padding: 10,
+                  cornerRadius: 4,
+                  displayColors: false,
+                },
+                title: {
+                  display: true,
+                  text: "Título do Gráfico",
+                  color: "#333",
+                  font: {
+                    size: 18,
+                    weight: "bold",
+                    family: "Arial, sans-serif",
+                  },
+                  padding: 20,
+                },
+              },
+              scales: {
+                x: {
+                  type: "linear",
+                  grid: {
+                    display: true,
+                    color: "rgba(200, 200, 200, 0.2)",
+                  },
+                  ticks: {
+                    color: "#666",
+                    font: {
+                      size: 12,
                     },
                   },
-                  y: {
-                    type: "linear",
-                    grid: {
-                      display: true,
-                      color: "rgba(200, 200, 200, 0.2)",
-                    },
-                    ticks: {
-                      color: "#666",
-                      font: {
-                        size: 12,
-                      },
-                      callback: function (value) {
-                        return value.toLocaleString();
-                      },
-                    },
-                    title: {
-                      display: true,
-                      text: "Eixo Y",
-                      color: "#333",
-                      font: {
-                        size: 14,
-                        family: "Arial, sans-serif",
-                      },
+                  title: {
+                    display: true,
+                    text: "Eixo X",
+                    color: "#333",
+                    font: {
+                      size: 14,
+                      family: "Arial, sans-serif",
                     },
                   },
                 },
-                layout: {
-                  padding: {
-                    left: 20,
-                    right: 20,
-                    top: 20,
-                    bottom: 20,
+                y: {
+                  type: "linear",
+                  grid: {
+                    display: true,
+                    color: "rgba(200, 200, 200, 0.2)",
+                  },
+                  ticks: {
+                    color: "#666",
+                    font: {
+                      size: 12,
+                    },
+                    callback: function (value) {
+                      return value.toLocaleString();
+                    },
+                  },
+                  title: {
+                    display: true,
+                    text: "Eixo Y",
+                    color: "#333",
+                    font: {
+                      size: 14,
+                      family: "Arial, sans-serif",
+                    },
                   },
                 },
-              }}
-            />
-          </div>
-        )}
+              },
+              layout: {
+                padding: {
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                  bottom: 20,
+                },
+              },
+            }}
+          />
+        </div>
       </div>
     </div>
   );
