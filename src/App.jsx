@@ -1,15 +1,26 @@
 import { useState } from "react";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import regression from "regression";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function App() {
   const [coords, setCoords] = useState([{ x: 0, y: 0 }]);
@@ -40,14 +51,19 @@ export default function App() {
     });
 
     setLaw(bestModel.model.string);
-    return bestModel.name;
+    return bestModel;
   }
 
   function handleVerify() {
-    const points = coords.map(coord => [coord.x, coord.y]);
-    const model = bestFitModel(points);
-    setLabelType(model);
-    setData(points.map((point) => ({ x: point[0], y: point[1] })));
+    const points = coords.map((coord) => [coord.x, coord.y]);
+    const bestModel = bestFitModel(points);
+    setLabelType(bestModel.name);
+
+    const modelData = bestModel.model.points.map((point) => ({
+      x: point[0],
+      y: point[1],
+    }));
+    setData(modelData);
   }
 
   const limpar = () => {
@@ -68,6 +84,9 @@ export default function App() {
     setCoords(updatedCoords);
   };
 
+  const minValue = Math.min(...data.map((point) => Math.min(point.x, point.y)));
+  const maxValue = Math.max(...data.map((point) => Math.max(point.x, point.y)));
+
   return (
     <div className="w-full h-screen p-6 bg-gray-100 text-gray-900 flex">
       <div className="w-2/5 flex flex-col items-center justify-center">
@@ -85,7 +104,9 @@ export default function App() {
                   <input
                     type="number"
                     value={coord.x}
-                    onChange={(e) => handleCoordChange(index, "x", e.target.value)}
+                    onChange={(e) =>
+                      handleCoordChange(index, "x", e.target.value)
+                    }
                     className="w-full p-2 bg-gray-50 text-gray-900 rounded border border-gray-300"
                   />
                 </td>
@@ -93,7 +114,9 @@ export default function App() {
                   <input
                     type="number"
                     value={coord.y}
-                    onChange={(e) => handleCoordChange(index, "y", e.target.value)}
+                    onChange={(e) =>
+                      handleCoordChange(index, "y", e.target.value)
+                    }
                     className="w-full p-2 bg-gray-50 text-gray-900 rounded border border-gray-300"
                   />
                 </td>
@@ -127,16 +150,118 @@ export default function App() {
         <h3 className="text-lg font-semibold mb-2 text-center">{labelType}</h3>
         <h3 className="text-lg mb-4 text-center">{law}</h3>
 
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="x" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="y" stroke="#4A90E2" />
-          </LineChart>
-        </ResponsiveContainer>
+        {data.length > 1 && (
+          <div style={{ width: "80%", height: "400px" }}>
+            <Line
+              data={{
+                datasets: [
+                  {
+                    label: `${labelType} Model`,
+                    data: data,
+                    borderColor: "rgba(75,192,192,1)",
+                    backgroundColor: "rgba(75,192,192,0.2)",
+                    tension: 0.2,
+                    parsing: {
+                      xAxisKey: "x",
+                      yAxisKey: "y",
+                    },
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                      color: '#333',
+                      font: {
+                        size: 14,
+                        family: 'Arial, sans-serif'
+                      },
+                      padding: 20
+                    }
+                  },
+                  tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    padding: 10,
+                    cornerRadius: 4,
+                    displayColors: false
+                  },
+                  title: {
+                    display: true,
+                    text: 'Título do Gráfico',
+                    color: '#333',
+                    font: {
+                      size: 18,
+                      weight: 'bold',
+                      family: 'Arial, sans-serif'
+                    },
+                    padding: 20
+                  }
+                },
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      color: '#666',
+                      font: {
+                        size: 12
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      color: 'rgba(200, 200, 200, 0.2)'
+                    },
+                    ticks: {
+                      color: '#666',
+                      font: {
+                        size: 12
+                      },
+                      callback: function (value) {
+                        return value.toLocaleString();
+                      }
+                    }
+                  }
+                },
+                layout: {
+                  padding: {
+                    left: 20,
+                    right: 20,
+                    top: 20,
+                    bottom: 20
+                  }
+                }
+              }}
+              // options={{
+                
+              //   maintainAspectRatio: false,
+              //   aspectRatio: 1, // Garante que os eixos tenham a mesma proporção
+              //   scales: {
+              //     x: {
+              //       type: "linear",
+              //       title: { display: true, text: "X" },
+              //       min: minValue,
+              //       max: maxValue,
+              //     },
+              //     y: {
+              //       title: { display: true, text: "Y" },
+              //       min: minValue,
+              //       max: maxValue,
+              //     },
+              //   },
+              // }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
